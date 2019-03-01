@@ -14,13 +14,13 @@ from datetime import datetime
 # In[3]:
 
 
-#charger le contenu de ce fichier 
+# load file contents
 data = pd.read_csv('births.csv')
 
 #day of week
 week_day = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 
-#see Data
+#see Data tail
 data.tail()
 
 
@@ -116,10 +116,4 @@ plt.legend(loc='center right');
 plt.xlabel("Days of week")
 plt.ylabel("Births")
 plt.show()
-
-
-# In[ ]:
-
-
-
 
