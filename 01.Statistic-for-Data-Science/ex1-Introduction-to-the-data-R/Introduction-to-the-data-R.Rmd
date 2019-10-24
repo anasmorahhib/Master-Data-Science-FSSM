@@ -1,0 +1,194 @@
+
+```{r}
+source("cdc.R")
+```
+```{r}
+names(cdc)
+```
+
+```{r}
+# 1.Check the size of the data frame: dim(cdc)
+dim(cdc)
+```
+
+```{r}
+#2.	Display the first and last few entries (rows): head(cdc) and tail(cdc)
+head(cdc) 
+tail(cdc)
+```
+```{r}
+#3.	A good first step in any analysis is to get a few summary statistics and graphics. Display a numerical summary (minimum, first quartile, median, mean, second quartile, and maximum) for weight: summary(cdc$weight)
+ summary(cdc$weight)
+```
+
+```{r}
+# 4.	Compute summary statistics one by one: mean(cdc$weight), var(cdc$weight) and median(cdc$weight)
+mean(cdc$weight)
+var(cdc$weight)
+median(cdc$weight)
+```
+```{r}
+#5.	For categorical data, consider the sample frequency or relative frequency distribution. The function table counts the number of times each kind of response was given. For example, to see the number of people who have smoked 100 cigarettes in their lifetime, type table(cdc$smoke100) or instead look at the relative frequency distribution by typing: table(cdc$smoke100)/20000
+table(cdc$smoke100) 
+table(cdc$smoke100)/20000
+```
+
+```{r}
+#6.	Next, make a bar plot of the entries in the table : barplot(table(cdc$smoke100))
+ barplot(table(cdc$smoke100))
+```
+
+```{r}
+# 7.	You could also break this into two steps by typing the following: smoke <- table(cdc$smoke100) and then barplot(smoke)
+smoke <- table(cdc$smoke100)/2000 
+barplot(smoke)
+```
+
+```{r}
+# 8.	The table command can be used to tabulate any number of variables that you provide. Examine which participants have smoked across each gender: table(cdc$gender,cdc$smoke100)
+table(cdc$gender,cdc$smoke100)
+```
+
+```{r}
+# 9.	Create a mosaic plot of this table: mosaicplot(table(cdc$gender,cdc$smoke100,))
+mosaicplot(table(cdc$gender,cdc$smoke100))
+```
+
+```{r}
+# 10.	Access a subset of the full data frame using row-and-column notation. What do the following commands display: cdc[567,6], cdc[1:10,6] and cdc[1:10,]
+cdc[567,6]
+cdc[1:10,6]
+cdc[1:10,]
+```
+
+```{r}
+# 11.	It's often useful to extract all individuals (cases) in a data set that have specific characteristics. We accomplish this through conditioning commands. Consider expressions like cdc$gender == "m" or cdc$age > 30
+
+head(cdc$gender == "m")
+head(cdc$age > 30)
+
+# all rows in cbc have gender == m; will return true else return false
+# all rows in cbc have age > 30 ; will return true else return false
+```
+
+```{r}
+# 12.	Extract just the data for the men in the sample: mdata <- subset(cdc, cdc$gender == "m")
+mdata <- subset(cdc, cdc$gender == "m")
+head(mdata)
+```
+
+```{r}
+# 13.	Use several of these conditions together: m_and_over30 <- subset(cdc, gender == "m" & age > 30)
+m_and_over30 <- subset(cdc, gender == "m" & age > 30)
+head(m_and_over30)
+```
+
+```{r}
+# 14.	Two common ways to visualize quantitative data are with box plots and histograms. Construct a box plot for the height: boxplot(cdc$height)
+boxplot(cdc$height)
+```
+
+```{r}
+# 15.	Compare the locations of the components of the box by examining the summary statistics: summary(cdc$height) and confirm that the median and upper and lower quartiles reported in the numerical summary match those in the graph. 
+summary(cdc$height)
+```
+
+```{r}
+#16.	Compare the heights of men and women with boxplot(cdc$height ~ cdc$gender)
+boxplot(cdc$height ~ cdc$gender)
+```
+
+```{r}
+# 17.	Display a histogram for the age of respondents: hist(cdc$age)
+hist(cdc$age)
+```
+
+
+```{r}
+# 18.	Control the number of bins by adding an argument to the command: hist(cdc$age, breaks = 50)
+hist(cdc$age, breaks = 50)
+```
+
+```{r}
+library(tidyverse)
+ggplot(data = cdc) + geom_point(mapping = aes(x = weight, y = wtdesire),color="blue")
+```
+
+```{r}
+ggplot(data = cdc, mapping = aes(x = weight, y = wtdesire)) + geom_point(color="orange") + geom_smooth()
+```
+```{r}
+#20.	Consider a new variable: the difference between desired weight (wtdesire) and current weight (weight). Create this new variable by subtracting the two columns in the data frame and assigning them to a new object called wdiff.
+cdc$wdiff = cdc$weight - cdc$wtdesire
+```
+
+```{r}
+# 21.	What type of data is wdiff? If an observation wdiff is 0, what does this mean about the person's weight and desired weight? What if wdiff is positive or negative?
+typeof(cdc$wdiff)
+# wdiff type is integer
+# If an observation wdiff is 0, it's means that the person want to keep his weight
+# If wdiff is positive, it's means that the person want to lose his weight. But if it was negative, then the person want to gain weight.
+```
+
+```{r}
+#22.	Describe the distribution of wdiff in terms of its center, shape, and spread, including any plots you use. What does this tell us about how people feel about their current weight?
+hist(cdc$wdiff)
+# the sh  shape of the distribution of wdiff is unimodel and symmetric. mean and median are near to the center
+
+ggplot(data = cdc, mapping = aes(x = weight, y = wdiff)) + geom_point(color="red", shape=1) + geom_smooth()
+#we notice that all people that has more than 300 in weight they want to lose it.
+
+
+```
+
+```{r}
+#23.	Using numerical summaries and a side-by-side box plot, determine if men tend to view their weight differently than women.
+
+#people that are satisfied with their weight
+df1 = table(cdc$gender,cdc$wdiff == 0)
+mosaicplot(df1)
+
+#people that either want to lose weight
+dfl = table(cdc$gender, cdc$wdiff > 0)
+mosaicplot(dfl)
+
+#people that either want to gain weight
+dfg = table(cdc$gender, cdc$wdiff < 0)
+mosaicplot(dfg)
+
+boxplot(cdc$wdiff ~ cdc$gender)
+
+#we notice that men are satisfied with their weight more than wemon,and men want to gain weight more than wemon,and wemon want to lose weight more than men.
+
+```
+
+```{r}
+#24.	Find the mean and standard deviation of weight and determine what proportion of the weights is within one standard deviation of the mean.
+#SD =(cdc$weight - mean)^2
+#SD = sqrt(sum(SD) / dim(cdc)[1]-1)
+
+sd = sd(cdc$weight)
+sd
+
+mean = mean(cdc$weight)
+mean
+hist(cdc$weight)
+
+#in one standard deviation of the mean there is 68% of data. So 68% of people has 170 weights plus 40 or minus 40   
+
+
+```
+
+```{r}
+library(tidyverse)
+ggplot(cdc,aes(weight,wdiff)) +geom_boxplot(aes(group = cut_width(weight, 200))) 
+ggplot(cdc,aes(weight)) +geom_histogram(binwidth=75)
+ggplot(cdc,aes(weight)) +geom_bar(position = position_stack(reverse = TRUE))+
+ coord_flip() +
+ theme(legend.position = "top")
+ggplot(cdc,aes(weight,wdiff)) +geom_col()
+ ggplot(cdc, aes(x = weight, fill = wdiff)) +geom_bar(width = 1)+coord_polar(theta = "y")
+ ggplot(cdc, aes(weight, wdiff)) + geom_point()+labs(colour = "Cylinders")+labs(x = "le poid")+labs(title = "New plot title")
+
+```
+

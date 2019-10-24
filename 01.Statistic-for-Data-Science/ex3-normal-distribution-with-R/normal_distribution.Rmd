@@ -1,0 +1,80 @@
+
+```{r}
+# 1. Use the CDC dataset you explored in the previous lab.
+source("cdc.R")
+```
+
+```{r}
+# 2.	Create a subset dataset with only 3 variables: weight, height and gender.
+new_cdc = cdc[c('weight', 'height', 'gender')]
+```
+
+```{r}
+#3.	Create two additional datasets fdims and hdims: one with only men and another with only women where weight and height in the created datasets are in Kg and Cm respectively.
+fdims = subset(new_cdc, cdc$gender == "f")
+# inch to cm
+fdims["height"] = fdims["height"]*2.54
+# pound to kg
+fdims["weight"] = fdims["weight"]/2.205
+
+hdims = subset(new_cdc, cdc$gender == "m")
+# inch to cm
+hdims["height"] = hdims["height"]*2.54
+# pound to kg
+hdims["weight"] = hdims["weight"]/2.205
+```
+
+```{r}
+# 4.	Use the created datasets to make a histogram of man heights and a histogram of women heights. How would you compare the various aspects of the two distributions?
+hist(x = hdims$height)
+hist(x = fdims$height)
+# Les deux distributions son unimodal et symmetric, et nous remarquons que la taille moyenne chez les hommes, est concentré entre 170 et 190 cm. par contre elle est entre 160 et 170 chez les femmes.
+```
+
+```{r}
+#5.	Compute the mean and standard deviation of female heights:
+fhgtmean <- mean(fdims$height)
+fhgtsd   <- sd(fdims$height)
+
+```
+
+```{r}
+# 6.	Plot a normal distribution curve on top of the histograms to see how closely the data follow a normal distribution: Make a density histogram to use as the backdrop and use the lines function to overlay a normal probability curve. We use dnorm to calculate the density of each of x-values in a distribution that is normal with mean fhgtmean and standard deviation fhgtsd. (To adjust the y-axis you can add a third argument to the histogram function: ylim = c(0, 0.06)):
+hist(fdims$height, probability = TRUE)
+x <- c(140:190)
+y <- dnorm(x = x, mean = fhgtmean, sd = fhgtsd)
+lines(x = x, y = y, col = "blue")
+
+```
+
+```{r}
+# 7.	Based on the plot, does it appear that the data follow a nearly normal distribution? To verify this, construct a normal probability plot, also called a normal Q-Q plot (for “quantile-quantile”). A data set that is nearly normal will result in a probability plot where the points closely follow the line. Any deviations from normality leads to deviations of these points from the line:
+qqnorm(fdims$height)
+qqline(fdims$height)
+# Oui ça se voit que nous avons une distribution proche à la distribution normal, 
+
+```
+
+```{r}
+# 8.	What do probability plots look like for data that I know came from a normal distribution? Simulate data from a normal distribution using rnorm.
+sim_norm <- rnorm(n = length(fdims$height), mean = fhgtmean, sd = fhgtsd)
+qqnorm(sim_norm)
+qqline(sim_norm)
+# on peut utiliser normal probability plots pour savoir le skewness aussi. 
+```
+
+```{r}
+# 9.	 Compare the shapes of the simulated data set, sim_norm, as well as its normal probability plot with those obtained earlier.
+```
+
+```{r}
+# 10.	Assuming female heights follow a normal distribution, what is the “theoretical” probability that a randomly chosen young adult female is taller than 182 cm (use pnorm)? 
+(1-pnorm(182, mean = fhgtmean, sd = fhgtsd))
+```
+
+```{r}
+#11.	Now calculate the probability empirically, by determining how many observations fall above 182 and then dividing this number by the total sample size: 
+sum(fdims$height > 182) / length(fdims$height)
+# la probabilité a augmenté par 0,0036
+```
+

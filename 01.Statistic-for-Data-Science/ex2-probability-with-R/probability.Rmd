@@ -1,0 +1,75 @@
+```{r}
+#1.	Load tydiverse
+library(tidyverse)
+
+```
+
+```{r}
+# 2.	The sample() function in R samples elements from a vector x. First, check the help page (?sample).
+sample(c("HEADS", "TAILS"), 4, TRUE)
+```
+```{r}
+# 3.	 If  you define heads as one and tails as zero, you can write the same command as follows: sample(0:1, 4, TRUE)
+sample(0:1, 4, TRUE)
+```
+
+```{r}
+# 4.	Count the number of heads by simply summing up the values in the vector: sample(0:1, 4, TRUE) %>% sum()   #NOTE: The pipe symbol %>%is not part of base R, but is part of an add-on package
+sample(0:1, 4, TRUE) %>% sum()
+```
+
+```{r}
+#5.	Run this function 5 times (you can use the up arrow in the console to avoid having to type it over and over). How many heads do you get?
+#after 5 test, i have HEADES 12 time
+```
+
+```{r}
+# 6.	Repeat the experiment a whole bunch more times via: replicate(20, sample(0:1, 4, TRUE) %>% sum())
+replicate(20, sample(0:1, 4, TRUE) %>% sum())
+```
+
+```{r}
+# 7.	Repeat it 50 times: heads50 <- replicate(50, sample(0:1, 4, TRUE) %>% sum())
+heads50 <- replicate(50, sample(0:1, 4, TRUE) %>% sum())
+heads50
+```
+
+```{r}
+# 8.	Estimate the probability of each of the outcomes (0, 1, 2, 3, 4 heads) by counting them up and dividing through by the number of experiments. Do this by putting the experiments in a data_frame() and then using count():
+dat50 <- data_frame(x = heads50) %>%
+group_by(x) %>%
+summarise(n = n(), p = n / 50)
+dat50
+```
+
+```{r}
+# 9.	Plot a histogram of the outcomes using ggplot2: ggplot(dat50, aes(x, p)) + geom_bar(stat = "identity")
+ggplot(dat50, aes(x, p)) + geom_bar(stat = "identity")
+```
+```{r}
+#11.	Again, put the vector in a data frame and calculate counts and probabilities of each outcome using group_by() and summarise():
+heads1000 <- replicate(1000, sample(0:1, 4, TRUE) %>% sum())
+dat1000 <- data_frame(x = heads1000) %>%
+group_by(x) %>%
+summarise(n = n(), p = n / 1000)
+head(dat1000)
+```
+
+
+```{r}
+#12.	Plot a histogram of the new outcomes using ggplot2.
+ggplot(dat1000, aes(x, p)) + geom_bar(stat = "identity")
+
+```
+
+```{r}
+# 13.	What is the probability of getting two or more heads in four throws? The outcomes meeting the criterion are 2, 3, or 4 heads: 
+dat1000 %>%
+filter(x >= 2) %>%
+summarise(p2 = sum(p))
+dat1000 %>%
+filter(x < 2) %>%
+summarise(p2 = sum(p))
+# sum of probability of dat1000 when x>=2 and when x<2: = 1
+```
+
